@@ -2,9 +2,9 @@ import snap
 import pandas
 import numpy as np
 import statistics as stats
+import random
 
 # snap.back.to.reality::watch.your.profanity::this.is.insanity::our.center.of.gravity::out.the.humanity::bisexuality::so.this.is.what.it.does.and.it.feels.like.the.male.fantasy?::screw.gravity::call.up.sean.annity::for.both.strategies::inside.our.galaxy::oh.we.re.snapping.back.to.reality.oh.there.goes.gravity.MOMS.SPAGHETTIIIIIII
-
 
 
 #def degree_ths(p2p, degrees):
@@ -34,6 +34,16 @@ def get_degrees(p2p):
     
     return degrees
 
+"""def edges(graph):
+    edges = []
+    for node in graph:
+        for neighbour in graph[node]:
+            if (neighbour, node) not in edge
+                 edges.append((node, neighbour))
+    return edges
+ 
+print(edges(graph))
+"""
 def loadFromFile(p2p, file):
 
     # Open dataset file
@@ -51,6 +61,7 @@ def loadFromFile(p2p, file):
                 p2p.AddNode(node)
         p2p.AddEdge(int(nodes[0]), int(nodes[1]))
     
+    
     print("P2P Graph created correctly.")
     print("Nodes:", p2p.GetNodes(), "Edges:", p2p.GetEdges())
 
@@ -65,7 +76,8 @@ def createP2P():
     loadFromFile(p2p, './dataset/p2p-Gnutella08.txt')
 
     # Generate pseudo-random thresholds
-
+    #for edge in p2p.GetEdges
+    #    ..random.random()
 
     return p2p
 
