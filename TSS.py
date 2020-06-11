@@ -10,7 +10,8 @@ import statistics as stats
 #def degree_ths(p2p, degrees):
 #
 #   TODO
-#
+# 
+#provacommit
 
 def costant_ths(p2p, degrees):
 
