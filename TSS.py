@@ -4,47 +4,76 @@ import numpy as np
 import statistics as stats
 import random
 
-# snap.back.to.reality::watch.your.profanity::this.is.insanity::our.center.of.gravity::out.the.humanity::bisexuality::so.this.is.what.it.does.and.it.feels.like.the.male.fantasy?::screw.gravity::call.up.sean.annity::for.both.strategies::inside.our.galaxy::oh.we.re.snapping.back.to.reality.oh.there.goes.gravity.MOMS.SPAGHETTIIIIIII
+# Ausiliary functions
 
+def copy_graph(graph):
+    tmpfile = 'copies/.copy.bin'
 
-#def degree_ths(p2p, degrees):
-#
-#   TODO
-# 
-#provacommit
+    # Saving to tmp file
+    FOut = snap.TFOut(tmpfile)
+    graph.Save(FOut)
+    FOut.Flush()
 
-def costant_ths(p2p, degrees):
+    # Loading to new graph
+    FIn = snap.TFIn(tmpfile)
+    graphtype = type(graph)
+    new_graph = graphtype.New()
+    new_graph = new_graph.Load(FIn)
 
-    thresholds = []
+    return new_graph
 
+def activation_pruning(p2p, probs):
 
-def get_tresholds(p2p, degrees, th_func):
+    for edge, prob in probs.items():
+        rand = random.random()
+        if rand < prob:
+            p2p.DelEdge(edge[0], edge[1])
 
-    thresholds = th_func(p2p, degrees)
-    
-    return thresholds
-
-def get_degrees(p2p):
+def ths_constant(p2p, degrees):
+    ths = {}
     nodeI = p2p.BegNI()
-    degrees = {}
+    th = random.randint(0, stats.mean(degrees))
 
-    degrees.update({nodeI.GetId(): nodeI.GetDeg()})
+    ths.update({nodeI.GetId() : th})
     while nodeI.Next() < p2p.EndNI():
-        degrees.update({nodeI.GetId(): nodeI.GetDeg()})
+        ths.update({nodeI.GetId() : th})
     
-    return degrees
+    return ths
 
-"""def edges(graph):
-    edges = []
-    for node in graph:
-        for neighbour in graph[node]:
-            if (neighbour, node) not in edge
-                 edges.append((node, neighbour))
-    return edges
- 
-print(edges(graph))
-"""
-def loadFromFile(p2p, file):
+def ths_majority(p2p, degrees):
+    ths = {}
+    nodeI = p2p.BegNI()
+    deg = degrees[nodeI.GetId()]
+
+    ths.update({nodeI.GetId() : deg/2})
+    while nodeI.Next() < p2p.EndNI():
+        deg = degrees[nodeI.GetId()]
+        ths.update({nodeI.GetId() : deg/2})
+    
+    return ths
+
+def ths_deg(p2p, degrees):
+    ths = {}
+    nodeI = p2p.BegNI()
+    deg = degrees[nodeI.GetId()]
+
+    ths.update({nodeI.GetId() : deg/3})
+    while nodeI.Next() < p2p.EndNI():
+        deg = degrees[nodeI.GetId()]
+        ths.update({nodeI.GetId() : deg/3})
+    
+    return ths
+
+# Create Graph, computes degrees, sets probs and ths, loading data from file
+def createGraphFromFile(file, prob_value, ths_fun):
+
+    # Create P2P undirected graph
+    p2p = snap.TUNGraph.New()
+
+    # Variables
+    degrees = []
+    probs = {}
+    ths = {}
 
     # Open dataset file
     fIN = open(file, 'r')
@@ -60,44 +89,66 @@ def loadFromFile(p2p, file):
             else:
                 p2p.AddNode(node)
         p2p.AddEdge(int(nodes[0]), int(nodes[1]))
+        probs.update({(int(nodes[0]), int(nodes[1])) : prob_value})
     
-    
+    # Activation pruning
+    activation_pruning(p2p, probs)
+
+    # Compute degrees
+    snap.GetDegSeqV(p2p, degrees)
+
+    # Create thresholds
+    ths = ths_fun(p2p, degrees)
+
     print("P2P Graph created correctly.")
     print("Nodes:", p2p.GetNodes(), "Edges:", p2p.GetEdges())
 
     # Close file
-    fIN.close() 
+    fIN.close()
 
-def createP2P():
-    # Create P2P undirected graph
-    p2p = snap.TUNGraph.New()
-
-    # Load dataset and popolate graph from .txt
-    loadFromFile(p2p, './dataset/p2p-Gnutella08.txt')
-
-    # Generate pseudo-random thresholds
-    #for edge in p2p.GetEdges
-    #    ..random.random()
-
-    return p2p
+    return (p2p, probs, ths)
 
 # TODO
-def TSS(p2p):
-
-    # Variables
-    degrees = get_degrees(p2p)
-    thresholds = get_tresholds(p2p, degrees, costant_ths)
-    print(thresholds)
+def TSS(p2p, probs, ths):
+    V = [node for node in ths.keys]
     S = []
+    neighbors = []
+
+    while len(V) > 0:
+        for node in V:
+            if ths.get(node) == 0:
+                GetNodesAtHop(p2p, node, 1, neighbors, False)
+                for neighbor in neighbors:
+                    
 
 
 
 
 
 
+    return len(S)
+
+
+def exec(file, exec_number, prob_value, ths_fun):
+    results = []
+    avg = 0
+    
+    returns = createGraphFromFile(file, prob_value, ths_fun)
+    p2p = returns[0]
+    probs = returns[1]
+    ths = returns[2]
+
+    temp_p2p = copy_graph(p2p)
+
+    for i in range(exec_number):
+        results.append(TSS(temp_p2p, probs, ths))
+        temp_p2p = copy_graph(p2p)
+
+    avg = stats.mean(results)
+
+    print("Media:", avg)
 
 if __name__ == '__main__':
 
-    p2p = createP2P()
-    #TSS(p2p)
+    exec('./dataset/p2p-Gnutella08.txt', 10, 0.01, ths_constant)
     
