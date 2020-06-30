@@ -1,5 +1,5 @@
 /*****
-test
+Test
 *****/
 
 graph G {
@@ -27083,5 +27083,5 @@ graph G {
   6296 -- 6297;
   6296 -- 6298;
   6296 -- 6299;
-  label = "\ntest\n";  fontsize=24;
+  label = "\nTest\n";  fontsize=24;
 }

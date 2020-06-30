@@ -8,7 +8,7 @@ import copy
 # Ausiliary functions
 def load_graph(file, prob_distr):
 
-    p2p = snap.PUNGraph.New()
+    p2p = snap.TNGraph.New()
     probs = {}
 
     # Open dataset file
@@ -36,7 +36,10 @@ def load_graph(file, prob_distr):
     # Close file
     fIN.close()
 
-    #snap.DrawGViz(p2p, snap.gvlDot, "graph.png", "test", True)
+    # UGraph = snap.GenRndGnm(snap.PUNGraph, 10, 40)
+    # snap.DrawGViz(UGraph, snap.gvlNeato, "graph_undirected.png", "graph 2", True)
+    
+    #snap.DrawGViz(p2p, snap.gvlNeato, "graph.png", "Test", True)
 
     return (p2p, probs)
 
@@ -84,10 +87,10 @@ def ths_deg(p2p, degrees):
     nodeI = p2p.BegNI()
     deg = degrees[nodeI.GetId()]
 
-    ths.update({nodeI.GetId() : deg*1})
+    ths.update({nodeI.GetId() : deg * 0.9})
     while nodeI.Next() < p2p.EndNI():
         deg = degrees[nodeI.GetId()]
-        ths.update({nodeI.GetId() : deg*1})
+        ths.update({nodeI.GetId() : deg * 0.9})
     
     return ths
 
@@ -139,14 +142,14 @@ def TSS(p2p, degrees, ths):
                 break
         if zero != -1:
             node = zero
-            snap.GetNodesAtHop(p2p, node, 1, neighbors, False)
+            snap.GetNodesAtHop(p2p, node, 1, neighbors, True)
             for neighbor in neighbors:
                 ths[neighbor] = max(ths[neighbor] - 1, 0)
                 degrees[neighbor] -= 1
         elif less != -1:
             node = less
             S.append(node)
-            snap.GetNodesAtHop(p2p, node, 1, neighbors, False)
+            snap.GetNodesAtHop(p2p, node, 1, neighbors, True)
             for neighbor in neighbors:
                 ths[neighbor] -= 1
                 degrees[neighbor] -= 1
@@ -156,7 +159,7 @@ def TSS(p2p, degrees, ths):
                 if (ths[n]/(degrees[n]*degrees[n]+1)) == max_value:
                     node = n
                     break
-            snap.GetNodesAtHop(p2p, node, 1, neighbors, False)
+            snap.GetNodesAtHop(p2p, node, 1, neighbors, True)
             for neighbor in neighbors:
                 degrees[neighbor] -= 1
         
@@ -173,14 +176,14 @@ def TSS_opt(p2p, degrees, ths):
     while len(V) > 0:
         for node in V:
             if ths[node] == 0:
-                snap.GetNodesAtHop(p2p, node, 1, neighbors, False)
+                snap.GetNodesAtHop(p2p, node, 1, neighbors, True)
                 for neighbor in neighbors:
                     ths[neighbor] = max(ths[neighbor] - 1, 0)
                     degrees[neighbor] -= 1
             elif degrees[node] < ths[node]:
                 S.append(node)
                 #print(node)
-                snap.GetNodesAtHop(p2p, node, 1, neighbors, False)
+                snap.GetNodesAtHop(p2p, node, 1, neighbors, True)
                 for neighbor in neighbors:
                     ths[neighbor] -= 1
                     degrees[neighbor] -= 1
@@ -190,7 +193,7 @@ def TSS_opt(p2p, degrees, ths):
                     if (ths[n]/(degrees[n]*degrees[n]+1)) == max_value:
                         node = n
                         break
-                snap.GetNodesAtHop(p2p, node, 1, neighbors, False)
+                snap.GetNodesAtHop(p2p, node, 1, neighbors, True)
                 for neighbor in neighbors:
                     degrees[neighbor] -= 1
 
@@ -219,6 +222,6 @@ def exec(file, exec_number, probs_distr, ths_fun):
 
 if __name__ == '__main__':
 
-    load_graph('./dataset/p2p-Gnutella08.txt', probs_constant)
+    #load_graph('./dataset/p2p-Gnutella08.txt', probs_constant)
     exec('./dataset/p2p-Gnutella08.txt', 10, probs_constant, ths_constant)
     
