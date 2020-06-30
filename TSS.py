@@ -36,6 +36,8 @@ def load_graph(file, prob_distr):
     # Close file
     fIN.close()
 
+    #snap.DrawGViz(p2p, snap.gvlDot, "graph.png", "test", True)
+
     return (p2p, probs)
 
 def decisione_differita(p2p, probs):
@@ -58,7 +60,7 @@ def get_degrees(p2p):
 def ths_constant(p2p, degrees):
     ths = {}
     nodeI = p2p.BegNI()
-    th = 2
+    th = 1
     ths.update({nodeI.GetId() : th})
     while nodeI.Next() < p2p.EndNI():
         ths.update({nodeI.GetId() : th})
@@ -82,15 +84,15 @@ def ths_deg(p2p, degrees):
     nodeI = p2p.BegNI()
     deg = degrees[nodeI.GetId()]
 
-    ths.update({nodeI.GetId() : deg/3})
+    ths.update({nodeI.GetId() : deg*1})
     while nodeI.Next() < p2p.EndNI():
         deg = degrees[nodeI.GetId()]
-        ths.update({nodeI.GetId() : deg/3})
+        ths.update({nodeI.GetId() : deg*1})
     
     return ths
 
 def probs_constant():
-    return 0.01
+    return 0.1
 
 # Create Graph, computes degrees, sets ths
 def createGraphFromFile(file, prob_distr, ths_fun):
@@ -217,6 +219,6 @@ def exec(file, exec_number, probs_distr, ths_fun):
 
 if __name__ == '__main__':
 
-    #load_graph('./dataset/p2p-Gnutella08.txt', probs_constant)
-    exec('./dataset/p2p-Gnutella08.txt', 1, probs_constant, ths_constant)
+    load_graph('./dataset/p2p-Gnutella08.txt', probs_constant)
+    exec('./dataset/p2p-Gnutella08.txt', 10, probs_constant, ths_constant)
     
